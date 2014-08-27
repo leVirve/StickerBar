@@ -69,12 +69,15 @@ def url_decode(text):
     return urllib.parse.unquote(text, encoding=ENCODING)
 
 def parsing_print(username, barname, data):
+
+    rank = data['user_info']['user_sign_rank']
     exp = data['user_info']['sign_bonus_point']
+    total = data['user_info']['total_sign_num']
+    conti = data['user_info']['cont_sign_num']
+    miss = data['user_info']['miss_sign_num']
 
-    printf('%s@tieba %s 成功簽到, exp +%s, 連續簽到%s天/累計簽到%s天'
-        % (username, barname, exp, conti, total))
-
-    printf(data, file=open('mobile_signin.json', 'a', encoding='gbk')) # Simple-log
+    printf('%s@tieba %s 成功簽到, exp +%s, 本吧第%s個簽到: 連續簽到%s天/累計簽到%s天 - 本月漏簽%s天'
+        % (username, barname, exp, rank, conti, total, miss))
 
 def printf(output):
     try:
