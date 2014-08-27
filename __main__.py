@@ -17,16 +17,18 @@ def start(user, cookie, cookieJar):
     # TO-DO: re-try failed tieba
     # tieba.status()
 
-    if tieba.STATUS == 'Cookie Update':
-        print('%s@tieba Cookie has been added into database!' % user)
+    if tieba.STATUS == 'Cookie Updated':
+        print('%s@tieba Cookie in database updated!' % user)
         cookieJar.add(Cookie(user, tieba.cookies))
 
 def main():
     cookieJar = CookieJar()
-
     for user, cookie in cookieJar.getItems():
         start(user, cookie, cookieJar)
 
-if __name__ == '__main__':
+    if not cookieJar.data:
+        user = input('New 貼吧使用者: ')
+        start(user, '', cookieJar)
 
+if __name__ == '__main__':
     main()
