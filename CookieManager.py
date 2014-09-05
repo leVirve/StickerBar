@@ -43,6 +43,10 @@ class CookieJar():
         self.data[item.user] = item.cookie
         self.save()
 
+    def handle(self, item):
+        if self.data[item.user] != item.cookie:
+            self.add(item)
+
     def getItems(self):
         return self.data.items()
 

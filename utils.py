@@ -53,6 +53,9 @@ def get_sign_data(bduss, fid, tbs, barname):
     data['sign'] = hashlib.md5(signature.encode(DATA_ENCODING)).hexdigest()
     return data
 
+def list_process(todo_list, success_list):
+    return list(set(todo_list) - set(success_list))
+
 def http_request(method, url, headers=config.headers, **kwargs):
     response = HTTP_REQUEST[method](
         url, headers=headers, allow_redirects=False, **kwargs)
@@ -67,6 +70,9 @@ def to_json(data):
 
 def url_decode(text):
     return urllib.parse.unquote(text, encoding=ENCODING)
+
+def url_encode(text):
+    return urllib.parse.quote(text)
 
 def parsing_print(username, barname, data):
 

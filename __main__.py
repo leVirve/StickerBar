@@ -11,24 +11,25 @@
 from Tieba import Tieba
 from CookieManager import Cookie, CookieJar
 
-def start(user, cookie, cookieJar):
-    tieba = Tieba(user, cookie)
-    tieba.run()
-    # TO-DO: re-try failed tieba
-    # tieba.status()
+'''
+    :NEW_USER: If you want to add more users, turn this to `True`
+'''
+NEW_USER = False
 
-    if tieba.STATUS == 'Cookie Updated':
-        print('%s@tieba Cookie in database updated!' % user)
-        cookieJar.add(Cookie(user, tieba.cookies))
+def start(user, cookie):
+    print('hello, %s' % user)
+    tieba = Tieba(user, cookie)
+    status = tieba.run()
+    return Cookie(user, tieba.cookies)
 
 def main():
     cookieJar = CookieJar()
-    for user, cookie in cookieJar.getItems():
-        start(user, cookie, cookieJar)
+    if NEW_USER or not cookieJar.data:
+        user = input('新增貼吧使用者: ')
+        cookieJar.add(Cookie(user, ''))
 
-    if not cookieJar.data:
-        user = input('New 貼吧使用者: ')
-        start(user, '', cookieJar)
+    for user, cookie in cookieJar.getItems():
+        cookieJar.handle(start(user, cookie))
 
 if __name__ == '__main__':
     main()
