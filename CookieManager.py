@@ -3,49 +3,39 @@ import pickle
 
 class Cookie:
     """ cookie item that contains 'user' and 'cookie' pair
-        """
-    def __init__(self, user=None, cookie=None):
+    """
+    def __init__(self, user=None, bduss=None):
         self.user = user
-        self.cookie = cookie
+        self.cookies = 'BDUSS=%s;' % bduss
 
 class CookieJar():
     """ maintain the set of cookies for every users
-        """
+    """
     def __init__(self, name='__Cookie'):
         self.filename = name + '.dat'
-        self.data = dict()
-
-        self.load()
+        self.data = self.load()
 
     def load(self):
         try:
-            f = open(self.filename, 'rb')
-            self.data = pickle.load(f)
-        except FileNotFoundError as e:
-            f = open(self.filename, 'x')
-        except EOFError as e:
-            pass
-        finally:
-            if f is not None:
-                f.close()
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        except:
+            return dict()
 
     def save(self):
         try:
-            f = open(self.filename, 'wb')
-            pickle.dump(self.data, f)
-        except pickle.PicklingError as e:
+            with open(self.filename, 'wb') as f:
+                pickle.dump(self.data, f)
+        except Exception as e:
             raise e
-        finally:
-            if f is not None:
-                f.close()
 
-    def add(self, item):
+    def update(self, item):
         self.data[item.user] = item.cookie
         self.save()
 
     def handle(self, item):
         if self.data[item.user] != item.cookie:
-            self.add(item)
+            self.update(item)
 
     def getItems(self):
         return self.data.items()

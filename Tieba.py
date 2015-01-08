@@ -1,8 +1,12 @@
 import re
 import datetime
-
 from utils import *
 from Record import Recorder
+
+class LoginException(Exception):
+    pass
+class SigninException(Exception):
+    pass
 
 class Tieba():
     """ class `Tieba` contains user's name and corresponding infomation 
@@ -12,47 +16,18 @@ class Tieba():
             :param usercookie: (Optional) 'BDUSS cookie' can be found from browsers
         """
         self.username = username
-        self.cookies = usercookie
-        self.bduss = None
+        self.bduss = self.validated_cookie(usercookie)
         self.recorder = Recorder()
-        self.STATUS = ''
 
     def run(self):
         """ Main method entry:
-                1. Check the cookie validity
-                2. Get the tieba list
-                3. Sign tiebas
+                1. Get the tieba list
+                2. Sign tiebas
         """
-        try:
-            self.checkCookie()
-        except ValueError:
-            if self.login():
-                self.STATUS = 'Cookie Updated'
-            else:
-                printf('%s@tieba Cookie Error: 密碼錯誤或請重新登入' % self.username)
-
-        for bar in self.getBarList():
-            try:
-                if self.sign(bar):
-                    self.recorder.dump(self.username, bar)
-            except:
-                printf('%s@tieba: (Error) Sign %s Fail !' % (self.username, bar))
+        list(map(self.sign, self.get_bar_list()))
         self.recorder.fin()
-        return self.STATUS
 
-    def checkCookie(self):
-        """ Validate the user's cookie,
-            and ensuring its login state
-        """
-        url = 'http://tieba.baidu.com/dc/common/tbs'
-        response = http_request('GET', url, headers=gen_headers(self.cookies))
-
-        if response['is_login']:
-            self.bduss = re.search(r"BDUSS=(.+);", self.cookies).group(1)
-            return True
-        raise ValueError
-
-    def getBarList(self):
+    def get_bar_list(self):
         """ Get favorite tieba list """
         tiebalist = list()
         page = 0
@@ -61,52 +36,58 @@ class Tieba():
             url = 'http://tieba.baidu.com/f/like/mylike?pn=%d' % page
             response = http_request('GET', url)
             bars = re.findall(r'href="\/f\?kw=([^"]+)', response.text)
+            tiebalist += [ url_decode(bar) for bar in bars ]
             if not bars:
-                return list_process(tiebalist, self.recorder.getlist(self.username))
-            tiebalist += [url_decode(bar) for bar in bars]
+                break
+        return list_process(tiebalist, self.recorder.getlist(self.username))
+
+    def validated_cookie(self, bduss_cookie):
+        """ Validate the user's cookie,
+            and ensuring its login state
+        """
+        url = 'http://tieba.baidu.com/dc/common/tbs'
+        response = http_request('GET', url, headers=gen_headers(bduss_cookie))
+        return re.search(r"BDUSS=(.+);", bduss_cookie).group(1) if response['is_login'] else self.login()
 
     def login(self):
-        """ Login to the server
-            Get the BDUSS cookie
+        """ Login & get the BDUSS cookie
         """
         url = 'http://wappass.baidu.com/passport/login'
         host = 'wappass.baidu.com'
-
         password = input('密碼: ')
         postdata = {
             'username': self.username,
             'password': password,
             'submit': "%E7%99%BB%E5%BD%95"
         }
-        response = http_request('POST', url, headers=gen_headers(None, host=host), data=postdata)
-        if 'BDUSS' in response.cookies:
-            self.cookies = 'BDUSS=%s;' % response.cookies['BDUSS']
-            self.checkCookie()
-        return True if response.status_code == 302 else False
+        try:
+            response = http_request('POST', url, headers=gen_headers(None, host=host), data=postdata)
+            return response.cookies['BDUSS']
+        except:
+            raise LoginException('Cookie Error: 密碼錯誤或Tieba忙碌中，請重新登入')
 
     def sign(self, barname):
         """ Sign with barname """
         url = 'http://tieba.baidu.com/mo/m?kw=' + url_encode(barname)
         response = http_request('GET', url)
-
-        addr = re.search(r'<a\shref="([^"]+)">签到', response.text).group(1)
-        fid = re.search(r'fid"\svalue="(\w+)', response.text).group(1)
-        tbs = re.search(r'name="tbs" value="(.*?)"', response.text).group(1)
-        url = 'http://c.tieba.baidu.com/c/c/forum/sign'
-        response = http_request('POST', url, data=get_sign_data(self.bduss, fid, tbs, barname))
-
         try:
-            parsing_print(self.username, barname, response)
-        except:
-            if not self.alternative_sign(addr, barname):
-                printf('%s@tieba %s 簽到失敗 >> %s' % (self.username, barname, response))
-                return False
-        return True
+            try:
+                addr = re.search(r'<a\shref="([^"]+)">签到', response.text).group(1)
+                fid = re.search(r'fid"\svalue="(\w+)', response.text).group(1)
+                tbs = re.search(r'name="tbs" value="(.*?)"', response.text).group(1)
+                url = 'http://c.tieba.baidu.com/c/c/forum/sign'
+                response = http_request('POST', url, data=get_sign_data(self.bduss, fid, tbs, barname))
+                parsing_print(self.username, barname, response)
+            except:
+                self.alternative_sign(addr, barname)
+            self.recorder.dump(self.username, barname)
+        except Exception as e:
+            print(e)
 
     def alternative_sign(self, addr, barname):
+        """ Sign with barname in mobile mode """
         url =  'http://tieba.baidu.com' + addr.replace('&amp;', '&')
-        response = http_request('POST', url)
+        response = http_request('POST', url) # Post?
         if response.ok:
             printf('%s@tieba %s 手機成功簽到' % (self.username, barname))
-            return True
-        return False
+        raise SigninException('%s@%s 簽到失敗' % (self.username, barname))

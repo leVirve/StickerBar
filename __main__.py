@@ -20,7 +20,7 @@ def start(user, cookie):
     print('hello, %s' % user)
     tieba = Tieba(user, cookie)
     status = tieba.run()
-    return Cookie(user, tieba.cookies)
+    return Cookie(user, tieba.bduss)
 
 def main():
     cookieJar = CookieJar()
