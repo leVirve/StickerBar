@@ -43,7 +43,7 @@ class Tieba():
             if not bars:
                 break
         self.recorder.print_signed_bars(self.username)
-        return list_process(
+        return get_unsigned_bars(
             tiebalist,
             self.recorder.get_signed_bars(self.username))
 

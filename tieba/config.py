@@ -13,5 +13,5 @@ headers = {
 
 # For return string mapping
 dictionary = {
-	'亲，你之前已经签过了': '你今天已經簽到了哦',
+    '亲，你之前已经签过了': '你今天已經簽到了哦',
 }

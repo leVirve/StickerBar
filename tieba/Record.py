@@ -2,6 +2,7 @@ import os
 import json
 import datetime
 import collections
+from tieba.utils import to_json
 
 
 class Recorder:
@@ -13,15 +14,9 @@ class Recorder:
         if os.path.isfile(self.filename):
             self.load()
 
-    def clean_json(self, raw):
-        try:
-            return json.load(raw)
-        except:
-            return dict()
-
     def load(self):
         with open(self.filename, 'r') as f:
-            raw = self.clean_json(f)
+            raw = to_json(f)
             if raw.get('expiration', '') == str(datetime.date.today()):
                 self.data.update(raw)
 
@@ -39,8 +34,3 @@ class Recorder:
         self.data['expiration'] = str(datetime.date.today())
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
-
-
-if __name__ == '__main__':
-    r = Recorder(filename='test.json')
-    r.print_signed_bar('Soreqq')
