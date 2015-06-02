@@ -1,6 +1,7 @@
+import os
 import json
-import collections
 import datetime
+import collections
 
 
 class Recorder:
@@ -9,22 +10,25 @@ class Recorder:
     def __init__(self, filename='sign-succ.json'):
         self.filename = filename
         self.data = collections.defaultdict(list)
-        self.load()
+        if os.path.isfile(self.filename):
+            self.load()
+
+    def clean_json(self, raw):
+        try:
+            return json.load(raw)
+        except:
+            return dict()
 
     def load(self):
-        try:
-            with open(self.filename, 'r') as f:
-                raw = json.load(f)
-                if raw.get('expiration', '') == str(datetime.date.today()):
-                    self.data.update(raw)
-        except:
-            pass
+        with open(self.filename, 'r') as f:
+            raw = self.clean_json(f)
+            if raw.get('expiration', '') == str(datetime.date.today()):
+                self.data.update(raw)
 
-    def get_signed_list(self, user):
-        self.print_signed_bar(user)
+    def get_signed_bars(self, user):
         return self.data[user]
 
-    def print_signed_bar(self, user):
+    def print_signed_bars(self, user):
         for bar in self.data[user]:
             print('%s@tieba %s 今日已簽到' % (user, bar))
 
