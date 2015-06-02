@@ -1,7 +1,6 @@
 import re
-import datetime
-from utils import *
-from Record import Recorder
+from tieba.utils import *
+from tieba.Record import Recorder
 
 
 class LoginException(Exception):
@@ -43,7 +42,6 @@ class Tieba():
             tiebalist += [url_decode(bar) for bar in bars]
             if not bars:
                 break
-        print(tiebalist)
         return list_process(tiebalist, self.recorder.getlist(self.username))
 
     def validated_cookie(self, bduss_cookie):

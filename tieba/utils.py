@@ -3,7 +3,7 @@ import urllib
 import hashlib
 from collections import OrderedDict
 
-import config
+import tieba.config as config
 
 try:
     import requests

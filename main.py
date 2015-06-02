@@ -8,8 +8,8 @@
 
 """
 
-from Tieba import Tieba
-from CookieManager import Cookie, CookieJar
+from tieba.Tieba import Tieba
+from tieba.CookieManager import Cookie, CookieJar
 
 '''
     :NEW_USER: If you want to add more users, turn this to `True`
