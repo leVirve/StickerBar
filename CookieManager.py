@@ -1,12 +1,13 @@
-import os
 import pickle
+
 
 class Cookie:
     """ cookie item that contains 'user' and 'cookie' pair
     """
     def __init__(self, user=None, bduss=None):
         self.user = user
-        self.cookies = 'BDUSS=%s;' % bduss
+        self.cookie = 'BDUSS=%s;' % bduss
+
 
 class CookieJar():
     """ maintain the set of cookies for every users

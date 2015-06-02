@@ -3,13 +3,17 @@ import datetime
 from utils import *
 from Record import Recorder
 
+
 class LoginException(Exception):
     pass
+
+
 class SigninException(Exception):
     pass
 
+
 class Tieba():
-    """ class `Tieba` contains user's name and corresponding infomation 
+    """ class `Tieba` contains user's name and corresponding infomation
         """
     def __init__(self, username, usercookie=None):
         """ Initial username and cookies.
@@ -36,9 +40,10 @@ class Tieba():
             url = 'http://tieba.baidu.com/f/like/mylike?pn=%d' % page
             response = http_request('GET', url)
             bars = re.findall(r'href="\/f\?kw=([^"]+)', response.text)
-            tiebalist += [ url_decode(bar) for bar in bars ]
+            tiebalist += [url_decode(bar) for bar in bars]
             if not bars:
                 break
+        print(tiebalist)
         return list_process(tiebalist, self.recorder.getlist(self.username))
 
     def validated_cookie(self, bduss_cookie):
@@ -86,8 +91,8 @@ class Tieba():
 
     def alternative_sign(self, addr, barname):
         """ Sign with barname in mobile mode """
-        url =  'http://tieba.baidu.com' + addr.replace('&amp;', '&')
-        response = http_request('POST', url) # Post?
+        url = 'http://tieba.baidu.com' + addr.replace('&amp;', '&')
+        response = http_request('POST', url)  # Post?
         if response.ok:
             printf('%s@tieba %s 手機成功簽到' % (self.username, barname))
         raise SigninException('%s@%s 簽到失敗' % (self.username, barname))

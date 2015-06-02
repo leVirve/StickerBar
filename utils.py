@@ -9,7 +9,6 @@ try:
     import requests
 except ImportError as e:
     print(('本專案相依於 Python Package: '
-            '`Requests`(http://docs.python-requests.org/en/latest/user/install/#install)\n'
             '請確認已安裝`Requests`\n'))
     raise e
 
@@ -22,6 +21,7 @@ ENCODING = 'gbk'
 DATA_ENCODING = 'utf8'
 ALTER_ENCODING = 'cp950'
 
+
 def gen_headers(usercookie, host=config.HOST_TIEBA):
     data = {
         'Cookie': usercookie,
@@ -29,6 +29,7 @@ def gen_headers(usercookie, host=config.HOST_TIEBA):
     }
     config.headers.update(data)
     return config.headers
+
 
 def get_sign_data(bduss, fid, tbs, barname):
     """ Magic poat data !!! """
@@ -53,13 +54,16 @@ def get_sign_data(bduss, fid, tbs, barname):
     data['sign'] = hashlib.md5(signature.encode(DATA_ENCODING)).hexdigest()
     return data
 
+
 def list_process(todo_list, success_list):
     return list(set(todo_list) - set(success_list))
+
 
 def http_request(method, url, headers=config.headers, **kwargs):
     response = HTTP_REQUEST[method](
         url, headers=headers, allow_redirects=False, **kwargs)
     return to_json(response.text) or response
+
 
 def to_json(data):
     try:
@@ -68,22 +72,24 @@ def to_json(data):
         return None
     return data
 
+
 def url_decode(text):
     return urllib.parse.unquote(text, encoding=ENCODING)
+
 
 def url_encode(text):
     return urllib.parse.quote(text)
 
-def parsing_print(username, barname, data):
 
+def parsing_print(username, barname, data):
     rank = data['user_info']['user_sign_rank']
     exp = data['user_info']['sign_bonus_point']
     total = data['user_info']['total_sign_num']
     conti = data['user_info']['cont_sign_num']
     miss = data['user_info']['miss_sign_num']
-
     printf('%s@tieba %s 成功簽到, exp +%s, 本吧第%s個簽到: 連續簽到%s天/累計簽到%s天 - 本月漏簽%s天'
         % (username, barname, exp, rank, conti, total, miss))
+
 
 def printf(output):
     try:

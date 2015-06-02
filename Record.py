@@ -1,6 +1,7 @@
 import json
 from datetime import date
 
+
 class Recorder:
     """ 紀錄成功貼吧
     """
@@ -14,7 +15,7 @@ class Recorder:
                 data = json.load(f)
                 if data['expiration'] == str(date.today()):
                     return data
-        except (ValueError, FileNotFoundError) as e:
+        except (ValueError, FileNotFoundError):
             pass
         return dict()
 
@@ -26,17 +27,16 @@ class Recorder:
         try:
             for bar in self.data[user]:
                 print('%s@tieba %s 今日已簽到' % (user, bar))
-        except Exception as e:
+        except Exception:
             return
 
     def dump(self, user, bar):
         try:
             self.data[user].append(bar)
         except KeyError:
-            self.data[user] = [ bar ]
+            self.data[user] = [bar]
 
     def fin(self):
         self.data['expiration'] = str(date.today())
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
-

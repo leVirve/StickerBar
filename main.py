@@ -16,17 +16,19 @@ from CookieManager import Cookie, CookieJar
 '''
 NEW_USER = False
 
+
 def start(user, cookie):
     print('hello, %s' % user)
     tieba = Tieba(user, cookie)
-    status = tieba.run()
+    tieba.run()
     return Cookie(user, tieba.bduss)
+
 
 def main():
     cookieJar = CookieJar()
     if NEW_USER or not cookieJar.data:
         user = input('新增貼吧使用者: ')
-        cookieJar.add(Cookie(user, ''))
+        cookieJar.update(Cookie(user, ''))
 
     for user, cookie in cookieJar.getItems():
         cookieJar.handle(start(user, cookie))
