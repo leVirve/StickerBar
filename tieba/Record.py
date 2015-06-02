@@ -1,5 +1,6 @@
 import json
-from datetime import date
+import collections
+import datetime
 
 
 class Recorder:
@@ -7,36 +8,35 @@ class Recorder:
     """
     def __init__(self, filename='sign-succ.json'):
         self.filename = filename
-        self.data = self.load()
+        self.data = collections.defaultdict(list)
+        self.load()
 
     def load(self):
         try:
             with open(self.filename, 'r') as f:
-                data = json.load(f)
-                if data['expiration'] == str(date.today()):
-                    return data
-        except (ValueError, FileNotFoundError):
+                raw = json.load(f)
+                if raw.get('expiration', '') == str(datetime.date.today()):
+                    self.data.update(raw)
+        except:
             pass
-        return dict()
 
-    def getlist(self, user):
+    def get_signed_list(self, user):
         self.print_signed_bar(user)
-        return self.data[user] if user in self.data else []
+        return self.data[user]
 
     def print_signed_bar(self, user):
-        try:
-            for bar in self.data[user]:
-                print('%s@tieba %s 今日已簽到' % (user, bar))
-        except Exception:
-            return
+        for bar in self.data[user]:
+            print('%s@tieba %s 今日已簽到' % (user, bar))
 
-    def dump(self, user, bar):
-        try:
-            self.data[user].append(bar)
-        except KeyError:
-            self.data[user] = [bar]
+    def save(self, user, bar):
+        self.data[user].append(bar)
 
-    def fin(self):
-        self.data['expiration'] = str(date.today())
+    def dump(self):
+        self.data['expiration'] = str(datetime.date.today())
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
+
+
+if __name__ == '__main__':
+    r = Recorder(filename='test.json')
+    r.print_signed_bar('Soreqq')

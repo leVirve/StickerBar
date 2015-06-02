@@ -28,7 +28,7 @@ class Tieba():
                 2. Sign tiebas
         """
         list(map(self.sign, self.get_bar_list()))
-        self.recorder.fin()
+        self.recorder.dump()
 
     def get_bar_list(self):
         """ Get favorite tieba list """
@@ -42,7 +42,9 @@ class Tieba():
             tiebalist += [url_decode(bar) for bar in bars]
             if not bars:
                 break
-        return list_process(tiebalist, self.recorder.getlist(self.username))
+        return list_process(
+            tiebalist,
+            self.recorder.get_signed_list(self.username))
 
     def validated_cookie(self, bduss_cookie):
         """ Validate the user's cookie,
@@ -83,7 +85,7 @@ class Tieba():
                 parsing_print(self.username, barname, response)
             except:
                 self.alternative_sign(addr, barname)
-            self.recorder.dump(self.username, barname)
+            self.recorder.save(self.username, barname)
         except Exception as e:
             print(e)
 
