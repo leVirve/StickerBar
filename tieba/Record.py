@@ -6,15 +6,18 @@ from tieba.utils import to_json
 
 
 class Recorder:
+
     """ 紀錄成功貼吧
     """
+
     def __init__(self, filename='sign-succ.json'):
         self.filename = filename
         self.data = collections.defaultdict(list)
-        if os.path.isfile(self.filename):
-            self.load()
+        self.load()
 
     def load(self):
+        if not os.path.isfile(self.filename):
+            return
         with open(self.filename, 'r') as f:
             raw = to_json(f)
             if raw.get('expiration', '') == str(datetime.date.today()):

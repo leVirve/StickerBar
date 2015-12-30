@@ -1,5 +1,6 @@
 
-UA_WINDOWS = 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0'
+UA_WINDOWS = \
+    'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0'
 UA_ANDROID = 'Mozilla/5.0 (Android; Mobile; rv:30.0) Gecko/30.0 Firefox/30.0'
 
 HOST_TIEBA = 'tieba.baidu.com'
