@@ -1,8 +1,14 @@
 import os
 import json
+import logging
 import datetime
 import collections
 from tieba.utils import to_json
+
+
+FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
+logging.basicConfig(format=FORMAT, filename='signs.log')
+logger = logging.getLogger('tieba')
 
 
 class Recorder:
@@ -31,6 +37,7 @@ class Recorder:
             print('%s@tieba %s 今日已簽到' % (user, bar))
 
     def save(self, user, bar):
+        logger.warning('Signs successfully: %s', bar, extra={'user': user})
         self.data[user].append(bar)
 
     def dump(self):
