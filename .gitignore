@@ -59,7 +59,7 @@ dist/
 tmp_*.py
 
 # CookieManage
-*.dat
+*.pkl
 
 # Output
 *.log

@@ -6,7 +6,7 @@ import collections
 from tieba.utils import to_json
 
 
-FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
+FORMAT = '%(asctime)-15s %(user)-8s %(message)s'
 logging.basicConfig(format=FORMAT, filename='signs.log')
 logger = logging.getLogger('tieba')
 
