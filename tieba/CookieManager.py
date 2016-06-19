@@ -17,8 +17,8 @@ class CookieJar():
     """ maintain the set of cookies for every users
     """
 
-    def __init__(self, name='__Cookie'):
-        self.filename = name + '.dat'
+    def __init__(self, name='cookies'):
+        self.filename = name + '.pkl'
         self.data = self.load()
 
     def load(self):
