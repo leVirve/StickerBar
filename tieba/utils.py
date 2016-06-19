@@ -19,7 +19,7 @@ def gen_headers(usercookie, host=config.HOST_TIEBA):
 
 
 def get_sign_data(bduss, fid, tbs, barname):
-    """ Magic poat data !!! """
+    """ Magic post data !!! """
     data = (
         ('BDUSS', bduss),
         ('_client_id',
